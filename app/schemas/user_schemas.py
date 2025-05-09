@@ -47,6 +47,21 @@ class UserCreate(UserBase):
     email: EmailStr = Field(..., example="john.doe@example.com")
     password: str = Field(..., example="Secure*1234")
 
+    @validator('password')
+    def validate_password(cls, value):
+        if len(value) < 8:
+            raise ValueError("Password must be at least 8 characters long.")
+        if not re.search(r"[A-Z]", value):
+            raise ValueError("Password must include at least one uppercase letter.")
+        if not re.search(r"[a-z]", value):
+            raise ValueError("Password must include at least one lowercase letter.")
+        if not re.search(r"[0-9]", value):
+            raise ValueError("Password must include at least one number.")
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):
+            raise ValueError("Password must include at least one special character.")
+        return value
+
+
 class UserUpdate(UserBase):
     email: Optional[EmailStr] = Field(None, example="john.doe@example.com")
     nickname: Optional[str] = Field(None, min_length=3, pattern=r'^[\w-]+$', example="john_doe123")
@@ -56,6 +71,23 @@ class UserUpdate(UserBase):
     profile_picture_url: Optional[str] = Field(None, example="https://example.com/profiles/john.jpg")
     linkedin_profile_url: Optional[str] =Field(None, example="https://linkedin.com/in/johndoe")
     github_profile_url: Optional[str] = Field(None, example="https://github.com/johndoe")
+    password: Optional[str] = Field(None, example="Secure*1234")  # Add this if not already present
+
+    @validator('password')
+    def validate_password(cls, value):
+        if value is None:
+            return value
+        if len(value) < 8:
+            raise ValueError("Password must be at least 8 characters long.")
+        if not re.search(r"[A-Z]", value):
+            raise ValueError("Password must include at least one uppercase letter.")
+        if not re.search(r"[a-z]", value):
+            raise ValueError("Password must include at least one lowercase letter.")
+        if not re.search(r"[0-9]", value):
+            raise ValueError("Password must include at least one number.")
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", value):
+            raise ValueError("Password must include at least one special character.")
+        return value
 
     @root_validator(pre=True)
     def check_at_least_one_value(cls, values):

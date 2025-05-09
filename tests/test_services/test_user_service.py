@@ -158,3 +158,13 @@ async def test_unlock_user_account(db_session, locked_user):
     assert unlocked, "The account should be unlocked"
     refreshed_user = await UserService.get_by_id(db_session, locked_user.id)
     assert not refreshed_user.is_locked, "The user should no longer be locked"
+
+@pytest.mark.asyncio
+async def test_create_user_weak_password(async_client):
+    payload = {
+        "email": "weak@example.com",
+        "password": "weakpass",  # Missing complexity
+        "nickname": "weakuser"
+    }
+    response = await async_client.post("/register/", json=payload)
+    assert response.status_code == 422
