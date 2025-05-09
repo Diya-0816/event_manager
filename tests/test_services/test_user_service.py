@@ -168,3 +168,9 @@ async def test_create_user_weak_password(async_client):
     }
     response = await async_client.post("/register/", json=payload)
     assert response.status_code == 422
+
+@pytest.mark.asyncio
+async def test_update_user_only_bio(db_session, user):
+    updated_user = await UserService.update(db_session, user.id, {"bio": "Updated bio"})
+    assert updated_user is not None
+    assert updated_user.bio == "Updated bio"

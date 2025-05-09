@@ -245,3 +245,18 @@ async def test_create_user_duplicate_nickname(async_client, admin_token):
     response = await async_client.post("/users/", json=payload, headers=headers)
     print("RESPONSE:", response.status_code, response.text)
     assert response.status_code in (400, 409)
+
+@pytest.mark.asyncio
+async def test_update_user_with_no_fields(async_client, admin_user, admin_token):
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    response = await async_client.put(f"/users/{admin_user.id}", json={}, headers=headers)
+    assert response.status_code == 422
+    assert "At least one field must be provided" in response.text
+
+@pytest.mark.asyncio
+async def test_update_user_only_profile_picture(async_client, admin_user, admin_token):
+    headers = {"Authorization": f"Bearer {admin_token}"}
+    payload = {"profile_picture_url": "https://example.com/profile.jpg"}
+    response = await async_client.put(f"/users/{admin_user.id}", json=payload, headers=headers)
+    assert response.status_code == 200
+    assert response.json()["profile_picture_url"] == payload["profile_picture_url"]

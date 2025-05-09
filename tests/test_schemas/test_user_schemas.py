@@ -87,3 +87,8 @@ def test_password_no_special_char():
 def test_password_valid():
     user = UserCreate(email="test@example.com", password="StrongPass1!", nickname="user123")
     assert user.password == "StrongPass1!"
+
+def test_user_update_no_fields():
+    with pytest.raises(ValidationError) as exc_info:
+        UserUpdate()
+    assert "At least one field must be provided" in str(exc_info.value)
