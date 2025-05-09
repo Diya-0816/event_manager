@@ -264,35 +264,34 @@ def user_response_data():
 
 @pytest.fixture
 def login_request_data():
-    return {"email": "john_doe_123", "password": "SecurePassword123!"}
+    return {"username": "john.doe@example.com", "password": "SecurePassword123!"}
 
 
 @pytest.fixture
 async def user_token(verified_user, async_client):
     response = await async_client.post(
         "/login/",
-        data={"username": verified_user.email, "password": "MySuperPassword$1234"},
-        headers={"Content-Type": "application/x-www-form-urlencoded"}
+        json={"username": verified_user.email, "password": "MySuperPassword$1234"}
     )
     return response.json()["access_token"]
+
 
 
 @pytest.fixture
 async def admin_token(admin_user, async_client):
     response = await async_client.post(
         "/login/",
-        data={"username": admin_user.email, "password": "securepassword"},
-        headers={"Content-Type": "application/x-www-form-urlencoded"}
+        json={"username": admin_user.email, "password": "securepassword"}
     )
     print("Admin login response:", response.status_code, response.text)
     return response.json()["access_token"]
+
 
 
 @pytest.fixture
 async def manager_token(manager_user, async_client):
     response = await async_client.post(
         "/login/",
-        data={"username": manager_user.email, "password": "securepassword"},
-        headers={"Content-Type": "application/x-www-form-urlencoded"}
+        json={"username": manager_user.email, "password": "securepassword"}
     )
     return response.json()["access_token"]
